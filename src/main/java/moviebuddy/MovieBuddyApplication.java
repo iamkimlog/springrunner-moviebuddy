@@ -13,9 +13,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import moviebuddy.domain.CsvMovieReader;
 import moviebuddy.domain.Movie;
-import moviebuddy.domain.MovieBuddyFactory;
 import moviebuddy.domain.MovieFinder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
