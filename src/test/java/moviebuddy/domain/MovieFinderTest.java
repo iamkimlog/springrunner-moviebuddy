@@ -2,6 +2,8 @@ package moviebuddy.domain;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
 
@@ -10,8 +12,9 @@ import java.util.List;
  */
 public class MovieFinderTest {
 
-	MovieBuddyFactory movieBuddyFactory = new MovieBuddyFactory();
-	MovieFinder movieFinder = movieBuddyFactory.movieFinder();
+	final ApplicationContext applicationContext =
+			new AnnotationConfigApplicationContext(MovieBuddyFactory.class);
+	MovieFinder movieFinder = applicationContext.getBean(MovieFinder.class);
 
 	@Test
 	void NotEmpty_directedBy() {
