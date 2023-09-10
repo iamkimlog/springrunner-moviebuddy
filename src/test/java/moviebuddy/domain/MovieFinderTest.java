@@ -1,9 +1,11 @@
 package moviebuddy.domain;
 
 import moviebuddy.MovieBuddyFactory;
+import moviebuddy.MovieBuddyProfile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
  */
 //@ExtendWith(SpringExtension.class)
 //@ContextConfiguration(classes= { MovieBuddyFactory.class })
+@ActiveProfiles(MovieBuddyProfile.CSV_MODE)
 @SpringJUnitConfig(classes = {MovieBuddyFactory.class})
 public class MovieFinderTest {
 

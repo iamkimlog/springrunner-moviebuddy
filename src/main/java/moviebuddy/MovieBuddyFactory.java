@@ -5,7 +5,7 @@ import moviebuddy.domain.MovieReader;
 import org.springframework.context.annotation.*;
 
 @Configuration
-@ComponentScan
+@ComponentScan(basePackages = "moviebuddy")
 @Import({ MovieBuddyFactory.DomainModuleConfig.class, MovieBuddyFactory.DataSourceModuleConfig.class })
 public class MovieBuddyFactory {
 
