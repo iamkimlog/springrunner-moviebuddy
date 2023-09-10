@@ -13,7 +13,7 @@ public class MovieFinder {
 
     private final MovieReader movieReader;
 
-    public MovieFinder(@Qualifier("csvMovieReader") MovieReader movieReader) {
+    public MovieFinder(@Qualifier("jaxbMovieReader") MovieReader movieReader) {
         this.movieReader = movieReader;
     }
 
