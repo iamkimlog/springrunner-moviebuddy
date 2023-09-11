@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,10 +25,20 @@ import java.util.stream.Collectors;
 @Repository
 public class CsvMovieReader implements MovieReader {
 
+    private String metadata;
+
+    public void setMetadata(String metadata) {
+        this.metadata = Objects.requireNonNull(metadata, "metadata is required value");
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
     @Override
     public List<Movie> loadMovies() {
         try {
-            final URI resourceUri = ClassLoader.getSystemResource("movie_metadata.csv").toURI();
+            final URI resourceUri = ClassLoader.getSystemResource(getMetadata()).toURI();
             final Path data = Path.of(FileSystemUtils.checkFileSystem(resourceUri));
             final Function<String, Movie> mapCsv = csv -> {
                 try {
