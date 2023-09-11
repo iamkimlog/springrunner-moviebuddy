@@ -12,7 +12,7 @@ import java.util.List;
 
 @ActiveProfiles(MovieBuddyProfile.XML_MODE)
 @SpringJUnitConfig(MovieBuddyFactory.class)
-public class JaxbMovieReaderTest {
+public class XmlMovieReaderTest {
 
     @Autowired
     MovieReader movieReader;
