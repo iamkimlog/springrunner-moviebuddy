@@ -5,9 +5,14 @@ import moviebuddy.MovieBuddyProfile;
 import moviebuddy.domain.Movie;
 import moviebuddy.domain.MovieReader;
 import moviebuddy.util.FileSystemUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,6 +30,8 @@ import java.util.stream.Collectors;
 @Repository
 public class CsvMovieReader implements MovieReader {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private String metadata;
 
     public void setMetadata(String metadata) {
@@ -33,6 +40,22 @@ public class CsvMovieReader implements MovieReader {
 
     public String getMetadata() {
         return metadata;
+    }
+
+    @PostConstruct
+    public void postConstruct() throws FileNotFoundException, URISyntaxException {
+        URL metadataUrl = ClassLoader.getSystemResource(metadata);
+        if (Objects.isNull(metadataUrl)) {
+            throw new FileNotFoundException(metadata);
+        }
+        if (!Files.isReadable(Path.of(metadataUrl.toURI()))) {
+            throw new ApplicationException(String.format("cannot read to metadata. [%s]", metadataUrl));
+        }
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        log.info("Destroyed bean");
     }
 
     @Override
