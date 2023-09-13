@@ -3,7 +3,13 @@ package moviebuddy;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import moviebuddy.cache.CachingAdvice;
 import moviebuddy.domain.MovieReader;
+import org.aopalliance.aop.Advice;
+import org.springframework.aop.Advisor;
+import org.springframework.aop.aspectj.DeclareParentsAdvisor;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.ApplicationContext;
@@ -35,26 +41,27 @@ public class MovieBuddyFactory {
         return cacheManager;
     }
 
+    @Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        return new DefaultAdvisorAutoProxyCreator();
+    }
+
+    @Bean
+    public Advisor cachingAdvisor(CacheManager cacheManager) {
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+        pointcut.setMappedName("load*");
+
+        Advice advice = new CachingAdvice(cacheManager);
+        // Advisor = PointCut(대상 선정 알고리즘) + Advice(부가기능)
+        return new DefaultPointcutAdvisor(pointcut, advice);
+    }
+
     @Configuration
     static class DomainModuleConfig {
     }
 
     @Configuration
     static class DataSourceModuleConfig {
-
-        @Primary
-        @Bean
-        public ProxyFactoryBean cachingMovieReaderFactory(ApplicationContext applicationContext) {
-            MovieReader target = applicationContext.getBean(MovieReader.class);
-            CacheManager cacheManager = applicationContext.getBean(CacheManager.class);
-
-            ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-            proxyFactoryBean.setTarget(target);
-            proxyFactoryBean.addAdvice(new CachingAdvice(cacheManager));
-
-            return proxyFactoryBean;
-        }
-
     }
 
 }
