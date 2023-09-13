@@ -1,5 +1,6 @@
 package moviebuddy.domain;
 
+import javax.cache.annotation.CacheResult;
 import java.util.List;
 
 public interface MovieReader {
@@ -9,6 +10,7 @@ public interface MovieReader {
      *
      * @return 불러온 영화 목록
      */
+    @CacheResult(cacheName = "movies")
     List<Movie> loadMovies();
 
 }
