@@ -18,6 +18,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 
@@ -30,9 +31,10 @@ public class MovieBuddyApplication {
 
     @Bean
     public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("messages");
         messageSource.setDefaultEncoding("utf-8");
+        messageSource.setCacheSeconds(5);
         return messageSource;
     }
 
@@ -81,10 +83,8 @@ public class MovieBuddyApplication {
 
             output.println(messageSource.getMessage("application.command.directedBy", new Object[] {director}, Locale.getDefault()));
             moviesDirectedBy.forEach(it -> {
-                String data = messageSource.getMessage(
-                        "application.command.directedBy.format",
-                        new Object[] { counter.getAndIncrement(), it.getTitle(), it.getReleaseYear(), it.getDirector(), it.getWatchedDate().format(Movie.DEFAULT_WATCHED_DATE_FORMATTER) },
-                        Locale.getDefault());
+                String format = messageSource.getMessage("application.commands.directedBy.format", new Object[0], Locale.getDefault());
+                String data = String.format(format, counter.getAndIncrement(), it.getTitle(), it.getReleaseYear(), it.getDirector(), it.getWatchedDate().format(Movie.DEFAULT_WATCHED_DATE_FORMATTER));
                 output.println(data);
             });
             output.println(messageSource.getMessage("application.command.directedBy.count", new Object[] {moviesDirectedBy.size()}, Locale.getDefault()));
@@ -94,18 +94,19 @@ public class MovieBuddyApplication {
             int releaseYear;
             try {
                 releaseYear = Integer.parseInt(arguments.get(1));
-            } catch (IndexOutOfBoundsException | NumberFormatException error) {
+            } catch (IndexOutOfBoundsException|NumberFormatException error) {
                 throw new ApplicationException.InvalidCommandArgumentsException(error);
             }
             List<Movie> moviesReleasedYearBy = movieFinder.releasedYearBy(releaseYear);
             AtomicInteger counter = new AtomicInteger(1);
 
-            output.println(String.format("find for movies from %s year.", releaseYear));
+            output.println(messageSource.getMessage("application.commands.releasedYearBy", new Object[] { String.valueOf(releaseYear) }, Locale.getDefault()));
             moviesReleasedYearBy.forEach(it -> {
-                String data = String.format("%d. title: %-50s\treleaseYear: %d\tdirector: %-25s\twatchedDate: %s", counter.getAndIncrement(), it.getTitle(), it.getReleaseYear(), it.getDirector(), it.getWatchedDate().format(Movie.DEFAULT_WATCHED_DATE_FORMATTER));
+                String format = messageSource.getMessage("application.commands.releasedYearBy.format", new Object[0], Locale.getDefault());
+                String data = String.format(format, counter.getAndIncrement(), it.getTitle(), it.getReleaseYear(), it.getDirector(), it.getWatchedDate().format(Movie.DEFAULT_WATCHED_DATE_FORMATTER));
                 output.println(data);
             });
-            output.println(String.format("%d movies found.", moviesReleasedYearBy.size()));
+            output.println(messageSource.getMessage("application.commands.releasedYearBy.count", new Object[] { String.valueOf(moviesReleasedYearBy.size()) }, Locale.getDefault()));
         });
 
         /*--------------------------------------------------------------------------------------*/
